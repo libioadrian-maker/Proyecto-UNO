@@ -89,6 +89,7 @@ public class Juego {
             Pantallas.pantallaUNO();
         } else {
             Datos.milisegundos = 0;
+            GestorRankingBD.añadirColumnaRacha(); // Añade la columna racha_actual si no existe
         }
         sistema();
     }
