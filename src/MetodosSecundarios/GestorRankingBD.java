@@ -86,6 +86,7 @@ public class GestorRankingBD {
      * mediante un SELECT para comprobar si el jugador ya existe. Si existe,
      * ejecuta un UPDATE que incrementa su contador en uno. Si no existe,
      * ejecuta un INSERT que crea su perfil con una victoria.
+     * 
      * Los valores se pasan de forma segura mediante PreparedStatement con
      * parametros de sustitucion (?) para prevenir inyecciones SQL.
      *
