@@ -10,21 +10,25 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Clase que gestiona una base de datos que implementa un ranking de victorias
- * obtenidas por un jugador
- * 
+ * Clase que gestiona la persistencia del ranking de victorias 
+ * Implementa las operaciones CRUD sobre la tabla perfil_jugador
+ * utilizando el JDBC.
+ *
  * @author DaniS y Libio
  */
 public class GestorRankingBD {
 
-    // Ruta de la base de datos
+    // Ruta del archivo de base de datos SQLite
     private static final Path RUTA_PARTIDA = Paths.get("src", "Archivos").resolve("ranking.db");
-    private static final String NOMBRE_ARCHIVO_RANKING = "jdbc:sqlite:"+RUTA_PARTIDA.toString();
+    private static final String NOMBRE_ARCHIVO_RANKING = "jdbc:sqlite:" + RUTA_PARTIDA.toString();
 
     /**
-     * Método que inicializa la base de datos creando una tabla con el ganador
-     * 
-     * @param 'nada'
+     * Crea la tabla perfil_jugador si no existe todavia. La tabla almacena un 
+     * codigo autoincremental como clave primaria, el nombre unico del jugador 
+     * y su contador de victorias
+     *
+     * @throws ClassNotFoundException
+     * @throws SQLException
      */
     public static void inicializarBD() {
         try {
@@ -49,11 +53,14 @@ public class GestorRankingBD {
     }
 
     /**
-     * Método que primero comprueba que el jugador existe, si existe actualiza el
-     * numero de victorias a su nombre en la tabla
-     * si no se inserta en la tabla una victoria
-     * 
-     * @param 'nada'
+     * Registra una victoria para el jugador. Primero consulta la tabla
+     * mediante un SELECT para comprobar si el jugador ya existe. Si existe,
+     * ejecuta un UPDATE que incrementa su contador en uno. Si no existe,
+     * ejecuta un INSERT que crea su perfil con una victoria.
+     * Los valores se pasan de forma segura mediante PreparedStatement con
+     * parametros de sustitucion (?) para prevenir inyecciones SQL.
+     *
+     * @param nombreJugador nombre del jugador ganador tal como aparece en la partida
      */
     public static void registrarVictoria(String nombreJugador) {
         String selectJugador = "SELECT victorias FROM perfil_jugador WHERE nombre = ?";
@@ -88,10 +95,11 @@ public class GestorRankingBD {
     }
 
     /**
-     * Realiza un select de la tabla perfil jugador y saca el top 5 de jugadores con
-     * más victorias
-     * 
-     * @param 'nada'
+     * Consulta la tabla perfil_jugador y muestra por consola los cinco jugadores
+     * con mas victorias.
+     * Utiliza Statement y ResultSet para ejecutar el SELECT y 
+     * recorrer cada fila devuelta con el metodo next(), extrayendo el nombre con 
+     * getString y las victorias con getInt
      */
     public static void mostrarTopJugadores() {
         String sql = "SELECT nombre, victorias FROM perfil_jugador ORDER BY victorias DESC LIMIT 5";
@@ -113,15 +121,17 @@ public class GestorRankingBD {
     }
 
     /**
-     * Elimina el perfil del jugador indicado por parametro del ranking
-     * 
-     * @param 'nada'
+     * Método que elimina de la base de datos el perfil del jugador indicado mediante
+     * DELETE. Comprueba el numero de filas afectadas que devuelve para
+     * informar si el borrado fue exitoso o si el jugador no existia en la tabla
+     *
+     * @param nombreJugador nombre del jugador cuyo perfil se desea eliminar
      */
     public static void eliminarPerfil(String nombreJugador) {
         String sql = "DELETE FROM perfil_jugador WHERE nombre = ?";
 
         try (Connection conn = DriverManager.getConnection(NOMBRE_ARCHIVO_RANKING);
-                PreparedStatement pstmt = conn.prepareStatement(sql)) { //
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, nombreJugador);
             int afectadas = pstmt.executeUpdate();
@@ -138,9 +148,9 @@ public class GestorRankingBD {
     }
 
     /**
-     * ALTER TABLE (RA8 d)
-     * Ejecuta este método desde el Modo Developer para cumplir el requisito de tu
-     * profesora.
+     * Modifica la estructura de la tabla perfil_jugador anadiendo la columna
+     * racha_actual de tipo INTEGER, mediante ALTER TABLE.
+     * Si la columna ya existe de una ejecucion anterior, SQLite lanza una excepcion
      */
     public static void añadirColumnaRacha() {
         String sql = "ALTER TABLE perfil_jugador ADD COLUMN racha_actual INTEGER DEFAULT 0";
