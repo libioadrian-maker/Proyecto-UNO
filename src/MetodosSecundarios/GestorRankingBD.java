@@ -22,10 +22,40 @@ public class GestorRankingBD {
     private static final Path RUTA_PARTIDA = Paths.get("src", "Archivos").resolve("ranking.db");
     private static final String NOMBRE_ARCHIVO_RANKING = "jdbc:sqlite:" + RUTA_PARTIDA.toString();
 
+    // Conexion compartida y reutilizada por todos los metodos de la clase
+    private static Connection conexion;
+
+    /**
+     * Devuelve la conexion activa con la base de datos.
+     *
+     * @return conexion activa con ranking.db
+     * @throws SQLException si no se puede establecer la conexion
+     */
+    private static Connection getConexion() throws SQLException {
+        if (conexion == null || conexion.isClosed()) {
+            conexion = DriverManager.getConnection(NOMBRE_ARCHIVO_RANKING);
+        }
+        return conexion;
+    }
+
+    /**
+     * Cierra la conexion activa si esta abierta.
+     * @param 'nada'
+     */
+    public static void cerrarConexion() {
+        try {
+            if (conexion != null && !conexion.isClosed()) {
+                conexion.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al cerrar la conexion: " + e.getMessage());
+        }
+    }
+
     /**
      * Crea la tabla perfil_jugador si no existe todavia. La tabla almacena un 
      * codigo autoincremental como clave primaria, el nombre unico del jugador 
-     * y su contador de victorias
+     * y su contador de victorias.
      *
      * @throws ClassNotFoundException
      * @throws SQLException
@@ -39,8 +69,7 @@ public class GestorRankingBD {
                     + "victorias INTEGER"
                     + ");";
 
-            try (Connection conexion = DriverManager.getConnection(NOMBRE_ARCHIVO_RANKING);
-                    Statement declaracion = conexion.createStatement()) {
+            try (Statement declaracion = getConexion().createStatement()) {
                 declaracion.execute(tablaPerfilJugador);
                 System.out.println("Base de datos de Ranking inicializada.");
             }
@@ -68,9 +97,8 @@ public class GestorRankingBD {
         String updateJugadorExistente = "UPDATE perfil_jugador SET victorias = victorias + 1 WHERE nombre = ?";
         boolean existe;
 
-        try (Connection conn = DriverManager.getConnection(NOMBRE_ARCHIVO_RANKING)) {
-
-            try (PreparedStatement pstmtSelect = conn.prepareStatement(selectJugador)) {
+        try {
+            try (PreparedStatement pstmtSelect = getConexion().prepareStatement(selectJugador)) {
                 pstmtSelect.setString(1, nombreJugador);
                 try (ResultSet resultado = pstmtSelect.executeQuery()) {
                     existe = resultado.next();
@@ -78,12 +106,12 @@ public class GestorRankingBD {
             }
 
             if (existe) {
-                try (PreparedStatement pstmtUpdate = conn.prepareStatement(updateJugadorExistente)) {
+                try (PreparedStatement pstmtUpdate = getConexion().prepareStatement(updateJugadorExistente)) {
                     pstmtUpdate.setString(1, nombreJugador);
                     pstmtUpdate.executeUpdate();
                 }
             } else {
-                try (PreparedStatement pstmtInsert = conn.prepareStatement(insertNuevoJugador)) {
+                try (PreparedStatement pstmtInsert = getConexion().prepareStatement(insertNuevoJugador)) {
                     pstmtInsert.setString(1, nombreJugador);
                     pstmtInsert.executeUpdate();
                 }
@@ -99,13 +127,12 @@ public class GestorRankingBD {
      * con mas victorias.
      * Utiliza Statement y ResultSet para ejecutar el SELECT y 
      * recorrer cada fila devuelta con el metodo next(), extrayendo el nombre con 
-     * getString y las victorias con getInt
+     * getString y las victorias con getInt.
      */
     public static void mostrarTopJugadores() {
         String sql = "SELECT nombre, victorias FROM perfil_jugador ORDER BY victorias DESC LIMIT 5";
 
-        try (Connection conn = DriverManager.getConnection(NOMBRE_ARCHIVO_RANKING);
-                Statement stmt = conn.createStatement();
+        try (Statement stmt = getConexion().createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
 
             System.out.println("\n--- TOP MEJORES JUGADORES (GLOBAL) ---");
@@ -123,15 +150,14 @@ public class GestorRankingBD {
     /**
      * Método que elimina de la base de datos el perfil del jugador indicado mediante
      * DELETE. Comprueba el numero de filas afectadas que devuelve para
-     * informar si el borrado fue exitoso o si el jugador no existia en la tabla
+     * informar si el borrado fue exitoso o si el jugador no existia en la tabla.
      *
      * @param nombreJugador nombre del jugador cuyo perfil se desea eliminar
      */
     public static void eliminarPerfil(String nombreJugador) {
         String sql = "DELETE FROM perfil_jugador WHERE nombre = ?";
 
-        try (Connection conn = DriverManager.getConnection(NOMBRE_ARCHIVO_RANKING);
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = getConexion().prepareStatement(sql)) {
 
             pstmt.setString(1, nombreJugador);
             int afectadas = pstmt.executeUpdate();
@@ -150,14 +176,12 @@ public class GestorRankingBD {
     /**
      * Modifica la estructura de la tabla perfil_jugador anadiendo la columna
      * racha_actual de tipo INTEGER, mediante ALTER TABLE.
-     * Si la columna ya existe de una ejecucion anterior, SQLite lanza una excepcion
+     * Si la columna ya existe de una ejecucion anterior, SQLite lanza una excepcion.
      */
     public static void añadirColumnaRacha() {
         String sql = "ALTER TABLE perfil_jugador ADD COLUMN racha_actual INTEGER DEFAULT 0";
 
-        try (Connection conn = DriverManager.getConnection(NOMBRE_ARCHIVO_RANKING);
-                Statement stmt = conn.createStatement()) {
-
+        try (Statement stmt = getConexion().createStatement()) {
             stmt.execute(sql);
             System.out.println("Tabla alterada: Nueva columna 'racha_actual' añadida.");
 
