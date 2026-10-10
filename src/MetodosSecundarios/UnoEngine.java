@@ -74,7 +74,14 @@ public class UnoEngine {
         AlmacenamientoDatos.preguntarMostrarEstadisticas(jugador, contextoPartida.getJugadores(),
                 contextoPartida.getControladorTurnos());
 
+        if (fin) {
+            Datos.gestionarRankingFinal(jugador.getNombre());
+        }
+        
         AlmacenamientoPartida.eliminarPartida();
+
+        GestorRankingBD.cerrarConexion();
+
     }
 
     /**
@@ -208,7 +215,7 @@ public class UnoEngine {
     public static void reanudarPartida() throws InterruptedException, ReiniciarJuego, SalirDelJuego {
         jugador = actual();
         int numeroCartasJugadorActual = jugador.getNumCartas();
-        
+
         boolean jugadorSinCartas = false;
         if (numeroCartasJugadorActual == 0) {
             jugadorSinCartas = true;

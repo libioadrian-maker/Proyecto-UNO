@@ -30,6 +30,8 @@ public class Juego {
     public static void iniciarJuego() throws InterruptedException, ReiniciarJuego {
         Datos.saltoDeLineas();
 
+        GestorRankingBD.inicializarBD();
+
         // Configuración inicial por defecto si no se reanuda
         cantidadActualJugadores = 2;
         nombresCargados.clear();

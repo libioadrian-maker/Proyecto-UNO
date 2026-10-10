@@ -6,7 +6,6 @@ build/
 target/
 
 # --- IDEs (VS Code / IntelliJ) ---
-.vscode/
 .idea/
 *.iml
 

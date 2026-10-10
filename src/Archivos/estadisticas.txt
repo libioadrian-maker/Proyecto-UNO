@@ -160,3 +160,48 @@ Jugadores de la partida:
   - Jugador2 (Cartas robadas en total: 10 | Cartas jugadas en total: 10)
 ========================================================================
 
+========================================================================
+Fecha y Hora: 03-06-2026, 12:01:33 p.Â m.
+Turnos jugados: 22
+Ganador: Jugador2
+Jugadores de la partida:
+  - Jugador1 (Cartas robadas en total: 12 | Cartas jugadas en total: 5)
+  - Jugador2 (Cartas robadas en total: 9 | Cartas jugadas en total: 9)
+========================================================================
+
+========================================================================
+Fecha y Hora: 04-06-2026, 01:31:27 a. m.
+Turnos jugados: 63
+Ganador: Jugador2
+Jugadores de la partida:
+  - Jugador1 (Cartas robadas en total: 33 | Cartas jugadas en total: 15)
+  - Jugador2 (Cartas robadas en total: 19 | Cartas jugadas en total: 19)
+========================================================================
+
+========================================================================
+Fecha y Hora: 04-06-2026, 02:35:12 a. m.
+Turnos jugados: 13
+Ganador: Jugador1
+Jugadores de la partida:
+  - Jugador1 (Cartas robadas en total: 7 | Cartas jugadas en total: 7)
+  - Jugador2 (Cartas robadas en total: 11 | Cartas jugadas en total: 2)
+========================================================================
+
+========================================================================
+Fecha y Hora: 04-06-2026, 02:39:02 a. m.
+Turnos jugados: 83
+Ganador: Jugador1
+Jugadores de la partida:
+  - Jugador1 (Cartas robadas en total: 24 | Cartas jugadas en total: 24)
+  - Jugador2 (Cartas robadas en total: 29 | Cartas jugadas en total: 15)
+========================================================================
+
+========================================================================
+Fecha y Hora: 04-06-2026, 04:20:13 a. m.
+Turnos jugados: 47
+Ganador: Jugador1
+Jugadores de la partida:
+  - Jugador1 (Cartas robadas en total: 16 | Cartas jugadas en total: 16)
+  - Jugador2 (Cartas robadas en total: 19 | Cartas jugadas en total: 11)
+========================================================================
+

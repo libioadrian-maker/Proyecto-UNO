@@ -140,8 +140,6 @@ public class AlmacenamientoPartida {
                 System.out.println("No se encuentra el archivo de la partida");
                 System.out.println(e.getLocalizedMessage());
             }
-        } else {
-            System.out.println("El archivo no existe");
         }
     }
 
